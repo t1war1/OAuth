@@ -1,38 +1,37 @@
-const express=require('express');
-const path=require('path');
-const app=express();
-const bodyParser=require('body-parser');
-const cookieParser=require('cookie-parser');
-const flash=require('flash');
-const session=require('express-session');
-const passport=require('./passport_config/passporthandler')
-const routes={
-    locallogin:require('./routes/login'),
-    signup:require('./routes/signup'),
-    logged:require('./routes/logged')
-}
+var express  = require('express');
+var app      = express();
+var port     = process.env.PORT || 8080;
+var mongoose = require('mongoose');
+var passport = require('passport');
+var path=require('path');
+var flash    = require('connect-flash');
 
-const PORT=process.env.PORT || 2354;
+var morgan       = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser   = require('body-parser');
+var session      = require('express-session');
 
+var configDB = require('./config/database.js');
 
+mongoose.connect(configDB.url);
+
+require('./config/passport')(passport);
+
+app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
+
 app.set('view engine','hbs');
 app.set('views',path.join(__dirname,'views'));
 
-app.use(session({secret:'nosecrets',
-    resave: false,
-    saveUninitialized: false}));
+app.use(session({ secret: 'ilovescotchscotchyscotchscotch' }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
-app.use('/signup',routes.signup);
-app.use('/login',routes.locallogin);
-app.use('/logged',routes.logged)
 
+require('./app/routes.js')(app, passport);
 
-
-app.listen(PORT,()=>{
-console.log('Server on at http://localhost:2354/');
+app.listen(port,()=>{
+    console.log(`Server on at http://localhost:${port}`);
 });
