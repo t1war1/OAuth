@@ -17,7 +17,7 @@ mongoose.connect(configDB.url);
 
 require('./config/passport')(passport);
 
-app.use(morgan('dev'));
+app.use(morgan('dev')); //to display login and signup requests
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
@@ -28,7 +28,7 @@ app.set('views',path.join(__dirname,'views'));
 app.use(session({ secret: 'ilovescotchscotchyscotchscotch' }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(flash());
+app.use(flash()); //for session messages
 
 require('./app/routes.js')(app, passport);
 

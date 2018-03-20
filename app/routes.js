@@ -2,7 +2,7 @@ module.exports = function(app, passport) {
 
 
     app.get('/', function(req, res) {
-        res.render('index.hbs'); // load the index.ejs file
+        res.render('index.hbs');
     });
 
     app.get('/login', function(req, res) {
@@ -31,7 +31,7 @@ module.exports = function(app, passport) {
     app.post('/signup', passport.authenticate('local-signup', {
         successRedirect : '/login',
         failureRedirect : '/signup',
-        failureFlash : true
+        failureFlash : true // to enable messages on failure
     }));
 
     app.post('/login', passport.authenticate('local-login', {
@@ -41,7 +41,7 @@ module.exports = function(app, passport) {
     }));
 };
 
-function isLoggedIn(req, res, next) {
+function isLoggedIn(req, res, next) {  //to check if user is logged in when user directly jumps to /profile
 
     if (req.isAuthenticated())
         return next();

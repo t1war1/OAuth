@@ -4,24 +4,23 @@ var User            = require('../app/models/user');
 
 module.exports = function(passport) {
 
-    passport.serializeUser(function(user, done) {
+    passport.serializeUser(function(user, done) { //determines which data of user should be stored in session
         done(null, user.id);
     });
 
-    passport.deserializeUser(function(id, done) {
+    passport.deserializeUser(function(id, done) { //get user back from the the key stored in session
         User.findById(id, function(err, user) {
             done(err, user);
         });
     });
 
-    passport.use('local-signup', new LocalStrategy({
+    passport.use('local-signup', new LocalStrategy({ //localstrategy for signup
             usernameField : 'email',
             passwordField : 'password',
             passReqToCallback : true
         },
         function(req, email, password, done) {
 
-            process.nextTick(function() {
 
                 User.findOne({ 'local.email' :  email }, function(err, user) {
                     if (err)
@@ -45,12 +44,10 @@ module.exports = function(passport) {
 
                 });
 
-            });
-
         })
     );
 
-    passport.use('local-login', new LocalStrategy({
+    passport.use('local-login', new LocalStrategy({ //localstrategy for login
         usernameField: 'email',
         passwordField: 'password',
         passReqToCallback: true
