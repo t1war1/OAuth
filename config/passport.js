@@ -1,4 +1,6 @@
 var LocalStrategy   = require('passport-local').Strategy;
+var fbStrategy=require('passport-facebook').Strategy;
+var secrets=require('./secrets.json');
 
 var User            = require('../app/models/user');
 
@@ -58,16 +60,55 @@ module.exports = function(passport) {
                     return done(err);
 
                 if (!user)
-                    return done(null, false, req.flash('loginMessage', 'No user found.'));
+                    return done(null, false, req.flash('loginMessage', 'No user found'));
 
                 if (!user.validPassword(password))
-                    return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
+                    return done(null, false, req.flash('loginMessage', 'Wrong password'));
 
                 return done(null, user);
             })
         }
     )
     );
+
+    passport.use(new fbStrategy({
+        clientID:secrets.fb.clientID,
+        clientSecret:secrets.fb.clientSecret,
+        callbackURL:secrets.fb.callbackURL
+    },(token,refreshToken,profile,done)=>{
+        User.findOne({'fb.id':profile.id},(err,user)=>{
+            if (err)
+            {
+                return done(err);
+            }
+
+            if(user)
+            {
+                return done(null,user);
+            }
+            else
+            {
+                var newUser=new User();
+                newUser.fb.id=profile.id;
+                newUser.fb.token=token;
+                newUser.fb.name=profile.name.givenName+' '+profile.name.familyName;
+                newUser.fb.email=profile.emails[0].value;
+
+                newUser.save((err)=>{
+                    if (err)
+                        throw err;
+                    return done(null,newUser);
+
+                })
+            }
+
+
+
+        });
+
+    }))
+
+
 
 
     };

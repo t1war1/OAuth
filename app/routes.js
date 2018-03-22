@@ -39,6 +39,15 @@ module.exports = function(app, passport) {
         failureRedirect : '/login',
         failureFlash : true
     }));
+
+    app.get('/auth/facebook',passport.authenticate('facebook',{
+        scope:['public_profile','email']
+    }))
+
+    app.get('/auth/facebook/callback',passport.authenticate('facebook',{
+        successRedirect:'/profile',
+        failureRedirect:'/'
+    }))
 };
 
 function isLoggedIn(req, res, next) {  //to check if user is logged in when user directly jumps to /profile

@@ -25,7 +25,8 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.set('view engine','hbs');
 app.set('views',path.join(__dirname,'views'));
 
-app.use(session({ secret: 'ilovescotchscotchyscotchscotch' }));
+app.use(session({ secret: 'xyz' ,resave: true,
+    saveUninitialized: true}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash()); //for session messages
