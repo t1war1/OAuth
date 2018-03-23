@@ -1,6 +1,6 @@
 var LocalStrategy   = require('passport-local').Strategy;
 var fbStrategy=require('passport-facebook').Strategy;
-var secrets=require('./secrets.json');
+var secrets=require('../secrets.json');
 
 var User            = require('../app/models/user');
 
@@ -106,7 +106,67 @@ module.exports = function(passport) {
 
         });
 
-    }))
+    }));
+
+    passport.use(new googleStrategy({
+
+
+
+        clientID        : secrets.google.clientID,
+
+        clientSecret    : secrets.google.clientSecret,
+
+        callbackURL     : secrets.google.callbackURL,
+
+
+
+    },(token, refreshToken, profile, done)=>{
+
+        User.findOne({'google.id':profile.id},(err,user)=> {
+
+            if (err)
+
+                return done(err);
+
+
+
+            if (user) {
+
+                return done(null, user);
+
+            }
+
+            else {
+
+                var newUser = new User();
+
+                newUser.google.id = profile.id;
+
+                newUser.google.token = token;
+
+                newUser.google.name = profile.displayName;
+
+                newUser.google.email = profile.emails[0].value;
+
+                newUser.save((err)=>{
+
+                    if (err)
+
+                        throw err;
+
+
+
+                    return done(null,newUser);
+
+                })
+
+
+
+            }
+
+        });
+
+    }));
 
 
 

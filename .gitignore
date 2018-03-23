@@ -116,3 +116,5 @@ fabric.properties
 mongodb
 .idea
 package-lock.json
+debug.log
+secrets.json
